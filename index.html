@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(to bottom, #f9e7d3, #ffffff);
+            background: #fff;
             text-align: center;
             color: #333;
         }
@@ -23,9 +23,6 @@
             max-width: 600px;
             margin: 50px auto;
             padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
@@ -61,88 +58,65 @@
             border-radius: 5px;
             font-size: 1.2em;
             cursor: pointer;
-            transition: background 0.3s;
         }
 
-        button:hover {
-            background-color: #2980b9;
-        }
-
-        /* Flash Messages */
-        .flash-message {
+        /* Full-Screen Overlay */
+        .overlay {
             position: fixed;
-            top: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px 20px;
-            font-size: 1.2em;
-            color: #fff;
-            border-radius: 10px;
-            text-align: center;
-            z-index: 1000;
-            animation: slideInOut 5s ease-in-out forwards;
-            opacity: 0;
-        }
-
-        .flash-message img {
-            width: 30px;
-            height: 30px;
-            margin-right: 10px;
-        }
-
-        .success {
-            background-color: #28a745;
-            box-shadow: 0px 4px 10px rgba(0, 128, 0, 0.3);
-        }
-
-        .error {
-            background-color: #e74c3c;
-            box-shadow: 0px 4px 10px rgba(255, 0, 0, 0.3);
-        }
-
-        /* Animation */
-        @keyframes slideInOut {
-            0% {
-                top: -100px;
-                opacity: 0;
-            }
-            15% {
-                top: 20px;
-                opacity: 1;
-            }
-            85% {
-                top: 20px;
-                opacity: 1;
-            }
-            100% {
-                top: -100px;
-                opacity: 0;
-            }
-        }
-
-        /* Final Message */
-        #finalMessage {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: none;
-            color: #e74c3c;
-            font-size: 1.5em;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            animation: fadeOut 5s forwards;
+        }
+
+        .overlay img {
+            max-width: 80%;
+            max-height: 60%;
+        }
+
+        .overlay span {
+            display: block;
+            margin-top: 20px;
+            color: #fff;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        /* Fade-out Animation */
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
         }
     </style>
 </head>
 <body>
-<!-- Flash Message -->
-<div id="flashMessage" class="flash-message">
-    <img id="flashIcon" src="" alt="icon">
-    <span id="flashText"></span>
+<!-- Full-screen Overlays -->
+<div id="successOverlay" class="overlay">
+    <div>
+        <img id="successImage" src="" alt="Success">
+        <span id="successText"></span>
+    </div>
 </div>
 
+<div id="errorOverlay" class="overlay">
+    <div>
+        <img id="errorImage" src="" alt="Error">
+        <span id="errorText"></span>
+    </div>
+</div>
+
+<!-- Content -->
 <div class="container">
     <h1>З Днем Народження, Мамо!</h1>
     <p>Відповідай на запитання, щоб отримати сюрприз!</p>
 
-    <!-- Questions -->
     <div class="question" id="question1">
         <p>1. Яка твоя улюблена квітка?</p>
         <input type="text" id="answer1" placeholder="Введіть відповідь тут">
@@ -167,31 +141,46 @@
         <button onclick="checkAnswer(4)">Відправити</button>
     </div>
 
-    <p id="finalMessage">🎊 Ти відповіла на всі питання! З Днем Народження! 🎊</p>
+    <p id="finalMessage" style="display: none; color: #e74c3c; font-size: 1.5em;">
+        🎊 Ти відповіла на всі запитання! З Днем Народження! 🎊
+    </p>
 </div>
 
 <script>
-    document.getElementById('question1').style.display = 'block';
-
     const correctAnswers = {
-        1: "1",
-        2: "2",
-        3: "3",
-        4: "4"
+        1: "троянда",
+        2: "синій",
+        3: "Imagine",
+        4: "Карпати"
     };
 
-    function showFlashMessage(message, type, icon) {
-        const flashMessage = document.getElementById('flashMessage');
-        const flashIcon = document.getElementById('flashIcon');
-        const flashText = document.getElementById('flashText');
+    const images = {
+        success: [
+            "./success-1.jpeg",
+            "./success-2.jpeg",
+            "https://i.imgur.com/k5KbZlR.png",
+            "https://i.imgur.com/XthV2jD.png"
+        ],
+        error: [
+            "./fail-1.webp",
+            "https://i.imgur.com/s9Yr8Mm.png",
+            "https://i.imgur.com/Q8YpHg3.png",
+            "https://i.imgur.com/ZVfPTO6.png"
+        ]
+    };
 
-        flashIcon.src = icon;
-        flashText.textContent = message;
+    function showOverlay(type, questionNumber) {
+        const overlay = document.getElementById(type === 'success' ? 'successOverlay' : 'errorOverlay');
+        const imageElement = document.getElementById(type === 'success' ? 'successImage' : 'errorImage');
+        const textElement = document.getElementById(type === 'success' ? 'successText' : 'errorText');
 
-        flashMessage.className = `flash-message ${type}`;
-        flashMessage.style.animation = 'none';
-        void flashMessage.offsetWidth;
-        flashMessage.style.animation = 'slideInOut 5s ease-in-out forwards';
+        imageElement.src = type === 'success' ? images.success[questionNumber - 1] : images.error[questionNumber - 1];
+        textElement.textContent = type === 'success' ? "Правильно! 🎉" : "Неправильно! ❌";
+
+        overlay.style.display = 'flex';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 5000);
     }
 
     function checkAnswer(questionNumber) {
@@ -200,7 +189,7 @@
         const nextQuestion = document.getElementById(`question${questionNumber + 1}`);
 
         if (input === correctAnswers[questionNumber].toLowerCase()) {
-            showFlashMessage("Правильно! 🎉", "success", "https://i.imgur.com/wFsvPca.png");
+            showOverlay('success', questionNumber);
 
             setTimeout(() => {
                 currentQuestion.style.display = 'none';
@@ -209,11 +198,13 @@
                 } else {
                     document.getElementById('finalMessage').style.display = 'block';
                 }
-            }, 1000);
+            }, 5000);
         } else {
-            showFlashMessage("Неправильно! Спробуй ще раз. ❌", "error", "https://i.imgur.com/A5A5A5.png");
+            showOverlay('error', questionNumber);
         }
     }
+
+    document.getElementById('question1').style.display = 'block';
 </script>
 </body>
 </html>
