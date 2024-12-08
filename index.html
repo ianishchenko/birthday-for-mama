@@ -162,19 +162,19 @@
     </div>
 
     <div class="question" id="question2">
-        <p>2. Яку піцерію часто ми відвідували?</p>
+        <p>2. Яку піцерію ми часто відвідували?</p>
         <input type="text" id="answer2" placeholder="Введіть відповідь тут">
         <button onclick="checkAnswer(2)">Відправити</button>
     </div>
 
     <div class="question" id="question3">
-        <p>3. Скільки років назад ви їхздили відпочивати в Єгипет?</p>
+        <p>3. Скільки років назад ви їздили відпочивати в Єгипет?</p>
         <input type="text" id="answer3" placeholder="Введіть відповідь тут">
         <button onclick="checkAnswer(3)">Відправити</button>
     </div>
 
     <div class="question" id="question4">
-        <p>4. Куди ти хочеш поїхати у відпустку?</p>
+        <p>4. Яке ім'я у найкращої іграшки?</p>
         <input type="text" id="answer4" placeholder="Введіть відповідь тут">
         <button onclick="checkAnswer(4)">Відправити</button>
     </div>
@@ -184,31 +184,36 @@
     const correctAnswers = {
         1: "фармацевт",
         2: "челентано",
-        3: "5",
-        4: "Карпати"
+        3: "6",
+        4: "альоша"
     };
+    let errorTries = 1;
 
     const successImages = [
         "./success-sasha.jpeg",
         "./success-chelentano.jpeg",
-        "./success-egipt.jpeg",
-        "./success-2.jpeg"
+        "./success-egypt.jpeg",
+        "./success-alyosha.jpeg"
     ];
 
     const errorImages = [
         "./fail-1.webp",
-        "./fail-1.webp",
-        "./fail-1.webp",
-        "./fail-1.webp"
+        "./fail-2.jpeg",
     ];
 
     function showOverlay(type, questionNumber) {
-        const overlay = document.getElementById(type === 'success' ? 'successOverlay' : 'errorOverlay');
-        const image = document.getElementById(type === 'success' ? 'successImage' : 'errorImage');
+        const isSuccess = type === 'success';
 
-        image.src = type === 'success' ? successImages[questionNumber - 1] : errorImages[questionNumber - 1];
+        const overlay = document.getElementById(isSuccess ? 'successOverlay' : 'errorOverlay');
+        const image = document.getElementById( isSuccess ? 'successImage' : 'errorImage');
+
+        if(!isSuccess) {
+            errorTries++;
+        }
+
+        image.src = isSuccess ? successImages[questionNumber - 1] : errorImages[errorTries%2? 1: 0];
         overlay.style.display = 'flex';
-        setTimeout(() => overlay.style.display = 'none', type === 'success' ? 10000 : 5000);
+        setTimeout(() => overlay.style.display = 'none', isSuccess ? 10000 : 5000);
     }
 
     function checkAnswer(questionNumber) {
