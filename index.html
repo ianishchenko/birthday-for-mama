@@ -72,7 +72,7 @@
             align-items: center;
             background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
-            animation: fadeOut 5s forwards;
+            animation: zoomIn 0.5s ease forwards, fadeOut 10s forwards;
         }
 
         .overlay img {
@@ -88,7 +88,39 @@
             font-weight: bold;
         }
 
-        /* Fade-out Animation */
+        /* Final Overlay */
+        .final-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            text-align: center;
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: zoomIn 1s ease forwards;
+        }
+
+        .final-overlay img {
+            max-width: 80%;
+            margin-bottom: 20px;
+        }
+
+        .final-overlay h2 {
+            font-size: 2em;
+        }
+
+        /* Animations */
+        @keyframes zoomIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         @keyframes fadeOut {
             0% { opacity: 1; }
             90% { opacity: 1; }
@@ -97,19 +129,25 @@
     </style>
 </head>
 <body>
-<!-- Full-screen Overlays -->
+<!-- Success and Error Overlays -->
 <div id="successOverlay" class="overlay">
     <div>
         <img id="successImage" src="" alt="Success">
-        <span id="successText"></span>
+        <span id="successText">Правильно! 🎉</span>
     </div>
 </div>
 
 <div id="errorOverlay" class="overlay">
     <div>
         <img id="errorImage" src="" alt="Error">
-        <span id="errorText"></span>
+        <span>Неправильно! ❌</span>
     </div>
+</div>
+
+<!-- Final Overlay -->
+<div id="finalOverlay" class="final-overlay">
+    <img src="./final.jpeg" alt="Love Mom">
+    <h2>Ми тебе дуже любимо! З Днем Народження ❤️</h2>
 </div>
 
 <!-- Content -->
@@ -118,19 +156,19 @@
     <p>Відповідай на запитання, щоб отримати сюрприз!</p>
 
     <div class="question" id="question1">
-        <p>1. Яка твоя улюблена квітка?</p>
+        <p>1. Ким ти мріяла стати?</p>
         <input type="text" id="answer1" placeholder="Введіть відповідь тут">
         <button onclick="checkAnswer(1)">Відправити</button>
     </div>
 
     <div class="question" id="question2">
-        <p>2. Який твій улюблений колір?</p>
+        <p>2. Яку піцерію часто ми відвідували?</p>
         <input type="text" id="answer2" placeholder="Введіть відповідь тут">
         <button onclick="checkAnswer(2)">Відправити</button>
     </div>
 
     <div class="question" id="question3">
-        <p>3. Яка назва твоєї улюбленої пісні?</p>
+        <p>3. Скільки років назад ви їхздили відпочивати в Єгипет?</p>
         <input type="text" id="answer3" placeholder="Введіть відповідь тут">
         <button onclick="checkAnswer(3)">Відправити</button>
     </div>
@@ -140,47 +178,37 @@
         <input type="text" id="answer4" placeholder="Введіть відповідь тут">
         <button onclick="checkAnswer(4)">Відправити</button>
     </div>
-
-    <p id="finalMessage" style="display: none; color: #e74c3c; font-size: 1.5em;">
-        🎊 Ти відповіла на всі запитання! З Днем Народження! 🎊
-    </p>
 </div>
 
 <script>
     const correctAnswers = {
-        1: "троянда",
-        2: "синій",
-        3: "Imagine",
+        1: "фармацевт",
+        2: "челентано",
+        3: "5",
         4: "Карпати"
     };
 
-    const images = {
-        success: [
-            "./success-1.jpeg",
-            "./success-2.jpeg",
-            "https://i.imgur.com/k5KbZlR.png",
-            "https://i.imgur.com/XthV2jD.png"
-        ],
-        error: [
-            "./fail-1.webp",
-            "https://i.imgur.com/s9Yr8Mm.png",
-            "https://i.imgur.com/Q8YpHg3.png",
-            "https://i.imgur.com/ZVfPTO6.png"
-        ]
-    };
+    const successImages = [
+        "./success-sasha.jpeg",
+        "./success-chelentano.jpeg",
+        "./success-egipt.jpeg",
+        "./success-2.jpeg"
+    ];
+
+    const errorImages = [
+        "./fail-1.webp",
+        "./fail-1.webp",
+        "./fail-1.webp",
+        "./fail-1.webp"
+    ];
 
     function showOverlay(type, questionNumber) {
         const overlay = document.getElementById(type === 'success' ? 'successOverlay' : 'errorOverlay');
-        const imageElement = document.getElementById(type === 'success' ? 'successImage' : 'errorImage');
-        const textElement = document.getElementById(type === 'success' ? 'successText' : 'errorText');
+        const image = document.getElementById(type === 'success' ? 'successImage' : 'errorImage');
 
-        imageElement.src = type === 'success' ? images.success[questionNumber - 1] : images.error[questionNumber - 1];
-        textElement.textContent = type === 'success' ? "Правильно! 🎉" : "Неправильно! ❌";
-
+        image.src = type === 'success' ? successImages[questionNumber - 1] : errorImages[questionNumber - 1];
         overlay.style.display = 'flex';
-        setTimeout(() => {
-            overlay.style.display = 'none';
-        }, 5000);
+        setTimeout(() => overlay.style.display = 'none', type === 'success' ? 10000 : 5000);
     }
 
     function checkAnswer(questionNumber) {
@@ -196,9 +224,9 @@
                 if (nextQuestion) {
                     nextQuestion.style.display = 'block';
                 } else {
-                    document.getElementById('finalMessage').style.display = 'block';
+                    document.getElementById('finalOverlay').style.display = 'flex';
                 }
-            }, 5000);
+            }, 10000);
         } else {
             showOverlay('error', questionNumber);
         }
